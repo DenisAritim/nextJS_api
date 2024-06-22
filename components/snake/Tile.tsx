@@ -5,7 +5,7 @@ export const Tile = ({
 }: {
     head: boolean;
     body: boolean;
-    apple: boolean;
+    apple?: boolean;
 }) => {
     return (
         <div
