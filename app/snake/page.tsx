@@ -65,10 +65,8 @@ export default function Home() {
     //callback managing logic at set interval (collision here)
     const [interval, setInterval] = useState<null | number>(null);
 
-    useInterval(() => {
-        if (!last) return;
-        let { id, x, y } = last;
-        switch (currentDirection) {
+    function direction(x: number, y: number, direction: Directions) {
+        switch (direction) {
             case Directions.UP:
                 y = y === 0 ? 8 : y - 1;
                 break;
@@ -84,6 +82,41 @@ export default function Home() {
             default:
                 break;
         }
+        return { x, y };
+    }
+
+    useInterval(() => {
+        if (!last) return;
+        let { id, x, y } = last;
+        const { x: newX, y: newY } = direction(x, y, currentDirection);
+        const { x: previousX, y: previousY } = queue[score - 2];
+        // console.log(previousX, previousY);
+        if (newX === previousX && newY === previousY) {
+            let newDirection;
+            switch (currentDirection) {
+                case Directions.UP:
+                    newDirection = Directions.DOWN;
+                    break;
+                case Directions.DOWN:
+                    newDirection = Directions.UP;
+                    break;
+                case Directions.LEFT:
+                    newDirection = Directions.RIGHT;
+                    break;
+                default:
+                case Directions.RIGHT:
+                    newDirection = Directions.LEFT;
+                    break;
+            }
+            const newDirections = direction(x, y, newDirection);
+            x = newDirections.x;
+            y = newDirections.y;
+        } else {
+            x = newX;
+            y = newY;
+        }
+        console.log(score);
+
         id = `${x}:${y}`;
         add({ id, x, y });
         remove();
